@@ -1,74 +1,82 @@
-// app/build.gradle.kts
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt.android)           // Hilt
-    kotlin("kapt")                              // Annotation processing cho Hilt/Room
+    alias(libs.plugins.hilt.android)
+    kotlin("kapt")
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+val weatherApiKey = localProperties.getProperty("WEATHER_API_KEY") ?: ""
 
 android {
     namespace = "com.example.weatherapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.weatherapp"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
-        // Đọc API key từ local.properties (không commit lên git)
-        // Thêm vào local.properties: WEATHER_API_KEY=your_key_here
-        buildConfigField("String", "WEATHER_API_KEY",
-            "\"${project.findProperty("WEATHER_API_KEY") ?: ""}\"")
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"$weatherApiKey\""
+        )
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
-    // ===== Jetpack Compose =====
-    implementation(platform(libs.compose.bom))   // Bill of Materials — đồng bộ version tự động
+    implementation(libs.javapoet)
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
 
-    // ===== Activity + ViewModel =====
     implementation(libs.activity.compose)
     implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.lifecycle.runtime.compose)  // collectAsStateWithLifecycle
+    implementation(libs.lifecycle.runtime.compose)
 
-    // ===== Navigation =====
     implementation(libs.navigation.compose)
 
-    // ===== Hilt (Dependency Injection) =====
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)   // hiltViewModel() trong Composable
+    implementation(libs.hilt.navigation.compose)
 
-    // ===== Retrofit (Network) =====
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.logging)
 
-    // ===== DataStore (Local Storage) =====
     implementation(libs.datastore.preferences)
 
-    // ===== Coroutines =====
     implementation(libs.coroutines.android)
 
-    // ===== Room (nếu cần cache phức tạp) =====
-    // implementation(libs.room.runtime)
-    // implementation(libs.room.ktx)
-    // kapt(libs.room.compiler)
-
-    // ===== Testing =====
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockk)

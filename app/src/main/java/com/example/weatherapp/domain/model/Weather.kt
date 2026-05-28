@@ -8,7 +8,6 @@ data class Weather(
     val description: String,
     val iconCode: String,
     val windSpeedMs: Double,
-    val uvIndex: Double,
     val condition: WeatherCondition
 )
 
