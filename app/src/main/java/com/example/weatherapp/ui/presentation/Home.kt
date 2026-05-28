@@ -1,6 +1,6 @@
-package com.example.weatherapp.presentation.ui.home
+package com.example.weatherapp.ui.presentation
 
-import WeatherViewModel
+import com.example.weatherapp.ui.viewmodel.WeatherViewModel
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut

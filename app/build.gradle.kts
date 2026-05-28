@@ -51,8 +51,11 @@ kotlin {
     jvmToolchain(17)
 }
 
+hilt {
+    enableAggregatingTask = false
+}
+
 dependencies {
-    implementation(libs.javapoet)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)

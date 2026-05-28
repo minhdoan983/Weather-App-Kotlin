@@ -1,3 +1,5 @@
+package com.example.weatherapp.ui.viewmodel
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.domain.usecase.GetWeatherByCityNameUseCase

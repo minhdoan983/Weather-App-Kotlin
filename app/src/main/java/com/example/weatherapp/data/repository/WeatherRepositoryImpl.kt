@@ -48,6 +48,5 @@ class WeatherRepositoryImpl @Inject constructor(
     companion object {
         // Trong thực tế: đọc từ BuildConfig.API_KEY hoặc local.properties
         // KHÔNG hardcode API key trong source code thật
-        private const val API_KEY = BuildConfig.WEATHER_API_KEY
-    }
+        private val API_KEY = BuildConfig.WEATHER_API_KEY    }
 }
