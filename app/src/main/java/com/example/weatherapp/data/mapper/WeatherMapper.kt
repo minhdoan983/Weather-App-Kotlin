@@ -11,9 +11,9 @@ fun WeatherDto.toDomain(): Weather {
         temperatureCelsius = main.temp,
         feelsLikeCelsius = main.feelsLike,
         humidity = main.humidity,
-        description = weather.description,
-        iconCode = weather.icon,
+        description = weather[0].description,
+        iconCode = weather[0].icon,
         windSpeedMs = wind.speed,
-        condition = WeatherCondition.fromIconCode(weather.icon)
+        condition = WeatherCondition.fromIconCode(weather[0].icon)
     )
 }

@@ -30,7 +30,6 @@ class WeatherViewModel @Inject constructor(
     private val getWeatherByCity: GetWeatherByCityNameUseCase,
     private val getWeatherByLocation: GetWeatherByLocationUseCase,
 ) : ViewModel() {
-
     // StateFlow → UI observe, luôn có 1 giá trị hiện tại (không null)
     private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Idle)
     val uiState: StateFlow<WeatherUiState> = _uiState.asStateFlow()
@@ -41,6 +40,10 @@ class WeatherViewModel @Inject constructor(
 
     // Lưu city cuối để Retry biết search lại gì
     private var lastSearchedCity: String = ""
+
+    init {
+        loadInitialData()
+    }
 
     /**
      * Entry point cho mọi action từ UI.
@@ -63,6 +66,28 @@ class WeatherViewModel @Inject constructor(
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
+    }
+
+    private fun loadInitialData() {
+        viewModelScope.launch {
+            getWeatherByLocation(10.75, 106.6667)
+                .onStart { _uiState.value = WeatherUiState.Loading }
+                .catch { e ->
+                    _uiState.value = WeatherUiState.Error(e.message ?: "Lỗi không xác định")
+                }
+                .collect { result ->
+                    _uiState.value = result.fold(
+                        onSuccess = { weather ->
+                            val warning =
+                                buildWarning(weather.temperatureCelsius, weather.windSpeedMs)
+                            WeatherUiState.Success(weather = weather, warning = warning)
+                        },
+                        onFailure = { e ->
+                            WeatherUiState.Error(e.message ?: "Lỗi không xác định")
+                        }
+                    )
+                }
+        }
     }
 
     private fun searchWeather(cityName: String) {
